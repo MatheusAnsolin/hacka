@@ -3,23 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plataforma SINAPSE</title>
+    <title>SINAPSE - Protótipo Interativo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Visualization & Content Choices:
-        - Report Info: Módulo do Colaborador - Autenticação. Goal: Inform. Viz/Presentation: HTML form elements. Interaction: Mock input. Justification: Simulate login. Library/Method: HTML.
-        - Report Info: Módulo do Colaborador - Perfil. Goal: Inform. Viz/Presentation: HTML text sections. Interaction: View. Justification: Display profile fields. Library/Method: HTML.
-        - Report Info: Módulo do Colaborador - Questionários. Goal: Inform/Interact. Viz/Presentation: HTML text (questions), radio buttons. Interaction: Mock selection. Justification: Simulate questionnaire. Library/Method: HTML.
-        - Report Info: Módulo do Colaborador - Gamificação. Goal: Inform. Viz/Presentation: HTML/CSS for badges, text for points/leaderboards. Interaction: View. Justification: Display gamification elements. Library/Method: HTML/CSS.
-        - Report Info: Módulo do Colaborador - Plano de Ação com IA. Goal: Inform. Viz/Presentation: HTML cards for recommendations. Interaction: View. Justification: Show AI plan. Library/Method: HTML.
-        - Report Info: Módulo do Colaborador - Trilhas do Cuidado. Goal: Inform. Viz/Presentation: HTML lists for activities. Interaction: View/mock checklist. Justification: Display care trails. Library/Method: HTML.
-        - Report Info: Módulo de Gestão - Dashboard Analítico. Goal: Inform/Compare. Viz/Presentation: Chart.js (pie, bar charts). Interaction: View charts. Justification: Visualize aggregated data. Library/Method: Chart.js.
-        - Report Info: Módulo de Gestão - Gestão de Encaminhamentos. Goal: Inform. Viz/Presentation: HTML table/list. Interaction: View mock data. Justification: Simulate referral management. Library/Method: HTML.
-        - Report Info: Módulo de Gestão - Configurações. Goal: Inform/Interact. Viz/Presentation: HTML form elements (mock). Interaction: Mock toggles/inputs. Justification: Simulate platform settings. Library/Method: HTML.
-        CONFIRMING NO SVG/Mermaid. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
         }
         .chart-container {
             position: relative;
@@ -46,17 +36,36 @@
         .content-section.active {
             display: block;
         }
-        .badge-icon {
-            font-size: 1.5rem;
-            margin-right: 0.5rem;
+        .trilha-header {
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .trilha-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .sub-tab-button {
+            border-color: transparent;
+        }
+        .sub-tab-button.active {
+            border-color: #3b82f6; /* Tailwind blue-500 */
+            color: #3b82f6;
+        }
+        .questionnaire-content {
+            display: none;
+        }
+        .questionnaire-content.active {
+            display: block;
         }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800">
+<body class="bg-slate-50 text-slate-800">
 <div class="container mx-auto p-4 min-h-screen flex flex-col">
-    <header class="bg-sky-700 text-white p-6 rounded-lg shadow-lg mb-6">
-        <h1 class="text-3xl font-bold text-center">Plataforma SINAPSE</h1>
-        <p class="text-center text-sky-200 mt-1">Gestão de Saúde Mental e Riscos Psicossociais</p>
+    <header class="bg-sky-800 text-white p-6 rounded-lg shadow-lg mb-6 flex flex-col items-center">
+        <img src="assets/logo.jpeg" alt="Logo da SINAPSE" class="h-16 w-auto mb-4 rounded-full shadow-md">
+        <h1 class="text-3xl font-bold text-center">SINAPSE</h1>
+        <p class="text-center text-sky-200 mt-1">Sistema Integrado de Apoio Psicossocial e Gestão da NR 01</p>
     </header>
 
     <nav class="mb-6 bg-white p-4 rounded-lg shadow">
@@ -69,179 +78,220 @@
     <main class="flex-grow">
         <div id="module-colaborador" class="module-content hidden">
             <p class="mb-4 text-lg text-slate-700 bg-sky-50 p-4 rounded-md border border-sky-200">
-                Bem-vindo ao Módulo do Colaborador! Esta seção simula a experiência do colaborador na Plataforma SINAPSE, oferecendo um espaço seguro e de apoio para o gerenciamento do bem-estar e acesso a recursos personalizados. Explore as abas abaixo para visualizar as diferentes funcionalidades, desde o perfil e questionários até planos de ação com IA e trilhas de cuidado.
+                Bem-vindo ao Módulo do Colaborador! Esta área simula a experiência do colaborador na plataforma SINAPSE, focada no seu bem-estar e no cumprimento das diretrizes da NR 01. Explore as funcionalidades abaixo, incluindo o diagnóstico inicial, as trilhas de cuidado personalizadas e o sistema de gamificação.
             </p>
             <div class="bg-white p-4 rounded-lg shadow mb-4">
                 <div class="flex flex-wrap border-b border-slate-200">
-                    <button onclick="showSection('colaborador-auth', this)" class="tab-button py-2 px-3 text-sm font-medium text-slate-500 hover:text-sky-600 active">Autenticação e Perfil</button>
-                    <button onclick="showSection('colaborador-questionarios', this)" class="tab-button py-2 px-3 text-sm font-medium text-slate-500 hover:text-sky-600">Questionários</button>
+                    <button onclick="showSection('colaborador-diagnostico', this)" class="tab-button py-2 px-3 text-sm font-medium text-slate-500 hover:text-sky-600 active">Diagnóstico e Avaliação</button>
                     <button onclick="showSection('colaborador-gamificacao', this)" class="tab-button py-2 px-3 text-sm font-medium text-slate-500 hover:text-sky-600">Gamificação</button>
-                    <button onclick="showSection('colaborador-plano-ia', this)" class="tab-button py-2 px-3 text-sm font-medium text-slate-500 hover:text-sky-600">Plano de Ação IA</button>
+                    <button onclick="showSection('colaborador-plano-ia', this)" class="tab-button py-2 px-3 text-sm font-medium text-slate-500 hover:text-sky-600">Plano de Ação com IA</button>
                     <button onclick="showSection('colaborador-trilhas', this)" class="tab-button py-2 px-3 text-sm font-medium text-slate-500 hover:text-sky-600">Trilhas do Cuidado</button>
-                    <button onclick="showSection('colaborador-notificacoes', this)" class="tab-button py-2 px-3 text-sm font-medium text-slate-500 hover:text-sky-600">Notificações</button>
                 </div>
             </div>
 
-            <div id="colaborador-auth" class="content-section active bg-white p-6 rounded-lg shadow">
-                <h3 class="text-xl font-semibold mb-4 text-sky-700">Autenticação e Perfil do Usuário</h3>
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <h4 class="text-lg font-medium mb-2 text-slate-600">Tela de Login (Simulação)</h4>
-                        <form class="space-y-3">
-                            <div>
-                                <label for="email-colab" class="block text-sm font-medium text-slate-700">Email Corporativo</label>
-                                <input type="email" id="email-colab" value="colaborador@empresa.com" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm p-2">
-                            </div>
-                            <div>
-                                <label for="senha-colab" class="block text-sm font-medium text-slate-700">Senha</label>
-                                <input type="password" id="senha-colab" value="********" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm p-2">
-                            </div>
-                            <button type="button" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 px-4 rounded-md shadow">Login</button>
-                            <button type="button" class="w-full mt-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-2 px-4 rounded-md shadow">Login com SSO da Empresa</button>
-                        </form>
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-medium mb-2 text-slate-600">Perfil do Usuário (Exemplo)</h4>
-                        <div class="space-y-3 p-4 border border-slate-200 rounded-md bg-slate-50">
-                            <p><strong>Nome:</strong> João Silva</p>
-                            <p><strong>Cargo:</strong> Analista de Marketing</p>
-                            <p><strong>Departamento:</strong> Marketing</p>
-                            <p><strong>Preferências de Conteúdo:</strong> Vídeos, Artigos</p>
-                            <p><strong>Temas de Interesse:</strong> Mindfulness, Gestão do Estresse</p>
-                            <p class="text-xs text-slate-500 mt-2"><em>(Histórico de saúde é confidencial e opcional, usado apenas para personalização pela IA)</em></p>
-                        </div>
-                    </div>
+            <div id="colaborador-diagnostico" class="content-section bg-white p-6 rounded-lg shadow">
+                <div class="border-b border-slate-200 mb-6">
+                    <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                        <button onclick="showQuestionnaireTab('inicial', this)" class="sub-tab-button active whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                            Avaliação Inicial
+                        </button>
+                        <button onclick="showQuestionnaireTab('mensal', this)" class="sub-tab-button whitespace-nowrap py-3 px-1 border-b-2 font-medium text-sm">
+                            Avaliação Mensal
+                        </button>
+                    </nav>
                 </div>
-            </div>
-
-            <div id="colaborador-questionarios" class="content-section bg-white p-6 rounded-lg shadow">
-                <h3 class="text-xl font-semibold mb-4 text-sky-700">Questionários e Diagnóstico</h3>
-                <p class="mb-4 text-sm text-slate-600">Esta seção simula como os questionários são apresentados ao colaborador. O objetivo é coletar informações para avaliar riscos psicossociais e monitorar o bem-estar de forma contínua.</p>
-                <div class="space-y-6">
-                    <div>
-                        <h4 class="text-lg font-medium mb-2 text-slate-600">Questionário Inicial (Exemplo)</h4>
-                        <p class="text-sm text-slate-500 mb-2">Tempo estimado: 15 minutos.</p>
-                        <div class="p-4 border border-slate-200 rounded-md bg-slate-50 space-y-3">
-                            <p class="font-medium">Com que frequência você se sentiu sobrecarregado nas últimas 4 semanas?</p>
-                            <div class="flex flex-wrap gap-2">
-                                <label class="flex items-center"><input type="radio" name="q1" class="mr-1 h-4 w-4 border-slate-300 text-sky-600 focus:ring-sky-500"> Nunca</label>
-                                <label class="flex items-center"><input type="radio" name="q1" class="mr-1 h-4 w-4 border-slate-300 text-sky-600 focus:ring-sky-500"> Raramente</label>
-                                <label class="flex items-center"><input type="radio" name="q1" class="mr-1 h-4 w-4 border-slate-300 text-sky-600 focus:ring-sky-500" checked> Às vezes</label>
-                                <label class="flex items-center"><input type="radio" name="q1" class="mr-1 h-4 w-4 border-slate-300 text-sky-600 focus:ring-sky-500"> Frequentemente</label>
-                                <label class="flex items-center"><input type="radio" name="q1" class="mr-1 h-4 w-4 border-slate-300 text-sky-600 focus:ring-sky-500"> Sempre</label>
+                <div id="questionario-inicial-content" class="questionnaire-content active">
+                    <h3 class="text-xl font-semibold mb-2 text-sky-700">Questionário de Avaliação Inicial</h3>
+                    <p class="mb-6 text-sm text-slate-600">Este questionário completo nos ajuda a entender os riscos psicossociais e sua percepção sobre o ambiente de trabalho. Suas respostas são confidenciais.</p>
+                    <form class="space-y-8">
+                        <div>
+                            <h4 class="font-semibold text-slate-800 border-b pb-2 mb-3">Sobre sua Carga de Trabalho</h4>
+                            <div class="space-y-4">
+                                <p class="font-medium text-sm text-slate-700">Com que frequência você se sente pressionado a trabalhar horas extras não planejadas?</p>
+                                <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                                    <label class="flex items-center"><input type="radio" name="q1" class="mr-2 h-4 w-4 text-sky-600 focus:ring-sky-500">Nunca</label>
+                                    <label class="flex items-center"><input type="radio" name="q1" class="mr-2 h-4 w-4 text-sky-600 focus:ring-sky-500">Raramente</label>
+                                    <label class="flex items-center"><input type="radio" name="q1" class="mr-2 h-4 w-4 text-sky-600 focus:ring-sky-500">Às vezes</label>
+                                    <label class="flex items-center"><input type="radio" name="q1" class="mr-2 h-4 w-4 text-sky-600 focus:ring-sky-500">Frequentemente</label>
+                                </div>
                             </div>
-                            <p class="font-medium mt-3">Descreva algum aspecto do seu trabalho que tem sido particularmente desafiador para seu bem-estar recentemente.</p>
-                            <textarea rows="3" class="w-full rounded-md border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm p-2" placeholder="Sua resposta aqui..."></textarea>
                         </div>
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-medium mb-2 text-slate-600">Questionário Mensal de Acompanhamento (Exemplo)</h4>
-                        <p class="text-sm text-slate-500 mb-2">Focado em bem-estar, estresse e produtividade.</p>
-                        <div class="p-4 border border-slate-200 rounded-md bg-slate-50">
-                            <p class="font-medium">Em uma escala de 1 a 5, como você avalia seu nível de bem-estar geral esta semana?</p>
-                            <input type="range" min="1" max="5" value="3" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-600">
+                        <div>
+                            <h4 class="font-semibold text-slate-800 border-b pb-2 mb-3">Sobre seu Ambiente e Relações de Trabalho</h4>
+                            <div class="space-y-4">
+                                <p class="font-medium text-sm text-slate-700">Sinto que recebo o apoio necessário dos meus colegas de equipe.</p>
+                                <div class="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+                                    <label class="flex items-center"><input type="radio" name="q2" class="mr-2 h-4 w-4 text-sky-600 focus:ring-sky-500">Discordo Totalmente</label>
+                                    <label class="flex items-center"><input type="radio" name="q2" class="mr-2 h-4 w-4 text-sky-600 focus:ring-sky-500">Discordo</label>
+                                    <label class="flex items-center"><input type="radio" name="q2" class="mr-2 h-4 w-4 text-sky-600 focus:ring-sky-500">Concordo</label>
+                                    <label class="flex items-center"><input type="radio" name="q2" class="mr-2 h-4 w-4 text-sky-600 focus:ring-sky-500">Concordo Totalmente</label>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-800 border-b pb-2 mb-3">Suas Sugestões</h4>
+                            <div class="space-y-4">
+                                <label for="qualitative-feedback" class="font-medium text-sm text-slate-700">Existe alguma sugestão que você gostaria de dar para melhorar o bem-estar na sua equipe ou na empresa?</label>
+                                <textarea id="qualitative-feedback" rows="4" class="w-full rounded-md border-slate-300 shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm p-2" placeholder="Sua resposta é opcional e confidencial..."></textarea>
+                            </div>
+                        </div>
+                        <button type="button" class="w-full md:w-auto bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 px-6 rounded-md shadow">Enviar Avaliação Inicial</button>
+                    </form>
+                </div>
+                <div id="questionario-mensal-content" class="questionnaire-content hidden">
+                    <h3 class="text-xl font-semibold mb-2 text-sky-700">Questionário de Avaliação Mensal</h3>
+                    <p class="mb-6 text-sm text-slate-600">Este é um pulso rápido para acompanhar seu bem-estar no último mês. Leva apenas 2 minutos.</p>
+                    <form class="space-y-8">
+                        <div>
+                            <label for="monthly-stress" class="font-medium text-sm text-slate-700">Em uma escala de 0 (nenhum) a 10 (extremo), qual foi seu nível médio de estresse no trabalho este mês?</label>
+                            <div class="flex items-center gap-4 mt-2">
+                                <span class="text-lg font-bold text-sky-600 w-8 text-center" id="stress-value">5</span>
+                                <input id="monthly-stress" type="range" min="0" max="10" value="5" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-600" oninput="document.getElementById('stress-value').innerText = this.value;">
+                            </div>
+                        </div>
+                        <div>
+                            <p class="font-medium text-sm text-slate-700">Qual palavra melhor descreve seu humor predominante no trabalho este mês?</p>
+                            <div class="flex flex-wrap gap-2 text-sm mt-2">
+                                <label class="flex items-center p-2 border rounded-md cursor-pointer hover:bg-slate-100"><input type="radio" name="mood" class="mr-2">Motivado(a)</label>
+                                <label class="flex items-center p-2 border rounded-md cursor-pointer hover:bg-slate-100"><input type="radio" name="mood" class="mr-2">Satisfeito(a)</label>
+                                <label class="flex items-center p-2 border rounded-md cursor-pointer hover:bg-slate-100"><input type="radio" name="mood" class="mr-2">Cansado(a)</label>
+                                <label class="flex items-center p-2 border rounded-md cursor-pointer hover:bg-slate-100"><input type="radio" name="mood" class="mr-2">Estressado(a)</label>
+                            </div>
+                        </div>
+                        <button type="button" class="w-full md:w-auto bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2 px-6 rounded-md shadow">Enviar Avaliação Mensal</button>
+                    </form>
                 </div>
             </div>
 
             <div id="colaborador-gamificacao" class="content-section bg-white p-6 rounded-lg shadow">
-                <h3 class="text-xl font-semibold mb-4 text-sky-700">Gamificação</h3>
-                <p class="mb-4 text-sm text-slate-600">A gamificação incentiva a participação e o engajamento com a plataforma através de um sistema de pontos, conquistas (badges) e leaderboards anônimos.</p>
+                <h3 class="text-xl font-semibold mb-4 text-sky-700">Gamificação e Engajamento</h3>
+                <p class="mb-4 text-sm text-slate-600">Para incentivar o uso recorrente e o engajamento, a plataforma utiliza um sistema de "Selos" e rankings.</p>
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
-                        <h4 class="text-lg font-medium mb-2 text-slate-600">Meu Progresso</h4>
-                        <div class="p-4 border border-slate-200 rounded-md bg-slate-50 space-y-3">
-                            <p><strong>Pontos Acumulados:</strong> <span class="text-sky-600 font-bold">1250</span></p>
-                            <div>
-                                <p class="font-medium">Progresso na Trilha "Redução do Estresse":</p>
-                                <div class="w-full bg-slate-200 rounded-full h-2.5">
-                                    <div class="bg-green-500 h-2.5 rounded-full" style="width: 60%"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <h4 class="text-lg font-medium mt-4 mb-2 text-slate-600">Minhas Conquistas (Badges)</h4>
+                        <h4 class="text-lg font-medium mb-2 text-slate-600">Meus Selos</h4>
                         <div class="flex flex-wrap gap-4">
-                            <div class="flex items-center p-3 bg-yellow-100 text-yellow-700 rounded-lg shadow-sm">
-                                <span class="badge-icon">🌟</span> Mestre Zen Iniciante
+                            <div class="text-center p-3">
+                                <div class="text-4xl">🏅</div>
+                                <p class="text-sm font-semibold">Consistência</p>
+                                <p class="text-xs text-slate-500">Acessos regulares</p>
                             </div>
-                            <div class="flex items-center p-3 bg-teal-100 text-teal-700 rounded-lg shadow-sm">
-                                <span class="badge-icon">🛡️</span> Guardião do Autocuidado
+                            <div class="text-center p-3">
+                                <div class="text-4xl">🌱</div>
+                                <p class="text-sm font-semibold">Evolução</p>
+                                <p class="text-xs text-slate-500">Melhoras percebidas</p>
                             </div>
-                            <div class="flex items-center p-3 bg-indigo-100 text-indigo-700 rounded-lg shadow-sm">
-                                <span class="badge-icon">🧭</span> Explorador de Trilhas
+                            <div class="text-center p-3">
+                                <div class="text-4xl">🎯</div>
+                                <p class="text-sm font-semibold">Ação</p>
+                                <p class="text-xs text-slate-500">Cumprimento de tarefas</p>
                             </div>
                         </div>
                     </div>
                     <div>
-                        <h4 class="text-lg font-medium mb-2 text-slate-600">Leaderboards Anônimos</h4>
+                        <h4 class="text-lg font-medium mb-2 text-slate-600">Rankings (Anônimo)</h4>
                         <div class="p-4 border border-slate-200 rounded-md bg-slate-50">
-                            <p class="font-medium">Top 10% em Autocuidado (Empresa)</p>
-                            <ul class="list-disc list-inside text-sm text-slate-600">
-                                <li>Colaborador Alfa (Você)</li>
-                                <li>Colaborador Beta</li>
-                                <li>Colaborador Gama</li>
+                            <p class="font-medium">Top Engajamento (Departamento)</p>
+                            <ul class="list-decimal list-inside text-sm text-slate-600 mt-1">
+                                <li>Colaborador Centauro</li>
+                                <li>Colaborador Fênix (Você)</li>
+                                <li>Colaborador Órion</li>
                             </ul>
-                            <p class="text-xs text-slate-500 mt-2"><em>Nomes são substituídos por pseudônimos para garantir o anonimato.</em></p>
+                            <p class="text-xs text-slate-500 mt-2">Nomes são substituídos para garantir o anonimato.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div id="colaborador-plano-ia" class="content-section bg-white p-6 rounded-lg shadow">
-                <h3 class="text-xl font-semibold mb-4 text-sky-700">Plano de Ação com IA</h3>
-                <p class="mb-4 text-sm text-slate-600">Com base nas suas respostas e perfil, a IA gera recomendações personalizadas de autocuidado, encaminhamentos (se necessário) e conteúdo relevante.</p>
+                <h3 class="text-xl font-semibold mb-4 text-sky-700">Plano de Ação Personalizado (com IA)</h3>
+                <p class="mb-4 text-sm text-slate-600">Com base nos dados das avaliações, a IA sugere um plano de ação individualizado, com foco em autocuidado, acesso a conteúdos e, se necessário, encaminhamento profissional.</p>
                 <div class="space-y-4">
-                    <div class="p-4 border border-sky-200 rounded-md bg-sky-50">
-                        <h4 class="text-md font-medium text-sky-700">Recomendação de Autocuidado:</h4>
-                        <p class="text-sm">Experimente este exercício de respiração de 2 minutos para aliviar o estresse.</p>
-                        <button class="mt-1 text-xs bg-sky-600 hover:bg-sky-700 text-white py-1 px-2 rounded">Acessar Exercício</button>
+                    <div class="p-4 border rounded-md bg-slate-50">
+                        <h4 class="text-md font-medium text-slate-700">Sugestão de Autocuidado:</h4>
+                        <p class="text-sm">"Que tal organizar sua agenda para a semana, incluindo pausas de 5 minutos a cada hora? Isso pode ajudar a reduzir a sensação de sobrecarga."</p>
+                    </div>
+                    <div class="p-4 border rounded-md bg-slate-50">
+                        <h4 class="text-md font-medium text-slate-700">Conteúdo de Suporte Recomendado:</h4>
+                        <p class="text-sm">Podcast: "Equilíbrio entre vida pessoal e profissional: é possível?"</p>
+                        <button class="mt-1 text-xs bg-sky-600 hover:bg-sky-700 text-white py-1 px-2 rounded">Ouvir Agora</button>
                     </div>
                     <div class="p-4 border border-amber-200 rounded-md bg-amber-50">
-                        <h4 class="text-md font-medium text-amber-700">Recursos de Apoio Adicional:</h4>
-                        <p class="text-sm">Identificamos que você pode se beneficiar de um suporte profissional. Gostaria de ver a lista de profissionais credenciados?</p>
+                        <h4 class="text-md font-medium text-amber-700">Orientação para Encaminhamento Profissional:</h4>
+                        <p class="text-sm">"Percebemos que alguns desafios persistem. Considerar o apoio de um profissional pode ser um passo importante. Gostaria de conhecer a rede credenciada de psicólogos?"</p>
                         <button class="mt-1 text-xs bg-amber-500 hover:bg-amber-600 text-white py-1 px-2 rounded">Ver Profissionais</button>
-                    </div>
-                    <div class="p-4 border border-slate-200 rounded-md bg-slate-50">
-                        <h4 class="text-md font-medium text-slate-600">Conteúdo Personalizado:</h4>
-                        <p class="text-sm">Artigo: "5 Técnicas para Melhorar a Gestão do Tempo e Reduzir a Pressão"</p>
-                        <button class="mt-1 text-xs bg-slate-500 hover:bg-slate-600 text-white py-1 px-2 rounded">Ler Artigo</button>
                     </div>
                 </div>
             </div>
 
             <div id="colaborador-trilhas" class="content-section bg-white p-6 rounded-lg shadow">
                 <h3 class="text-xl font-semibold mb-4 text-sky-700">Trilhas do Cuidado</h3>
-                <p class="mb-4 text-sm text-slate-600">As trilhas são conjuntos de atividades e conteúdos estruturados, atribuídos automaticamente pela IA para apoiar seu bem-estar de forma direcionada.</p>
-                <div class="p-4 border border-green-200 rounded-md bg-green-50">
-                    <h4 class="text-lg font-medium text-green-700">Trilha Ativa: Redução do Estresse Leve</h4>
-                    <p class="text-sm text-green-600 mb-2">Cronograma de atividades diárias/semanais:</p>
-                    <ul class="space-y-2 text-sm">
-                        <li class="flex items-center"><input type="checkbox" checked class="mr-2 h-4 w-4 border-slate-300 text-green-600 focus:ring-green-500"> Dia 1: Assistir vídeo sobre o ciclo do estresse (5 min)</li>
-                        <li class="flex items-center"><input type="checkbox" class="mr-2 h-4 w-4 border-slate-300 text-green-600 focus:ring-green-500"> Dia 2: Praticar exercício de respiração diafragmática (3 min)</li>
-                        <li class="flex items-center"><input type="checkbox" class="mr-2 h-4 w-4 border-slate-300 text-green-600 focus:ring-green-500"> Semana 1: Escrever no diário emocional 3 vezes</li>
-                    </ul>
-                    <div class="w-full bg-slate-200 rounded-full h-1.5 mt-3">
-                        <div class="bg-green-500 h-1.5 rounded-full" style="width: 33%"></div>
+                <p class="mb-4 text-sm text-slate-600">Com base no seu diagnóstico, a IA atribui uma trilha de cuidado específica. Clique em cada trilha para ver os detalhes.</p>
+                <div class="space-y-2">
+                    <div class="border border-green-200 rounded-lg">
+                        <div class="trilha-header flex justify-between items-center p-4 bg-green-50 hover:bg-green-100" onclick="toggleTrilha('trilha1')">
+                            <h4 class="text-lg font-bold text-green-800">Trilha 1 – CUIDADO ESSENCIAL</h4>
+                            <span id="arrow-trilha1" class="transform transition-transform">▼</span>
+                        </div>
+                        <div id="trilha1-content" class="trilha-content">
+                            <div class="p-4 border-t border-green-200 text-sm text-slate-700 space-y-3">
+                                <p><strong>Indicado para:</strong> Colaboradores com sinais leves de estresse, cansaço ou oscilação emocional.</p>
+                                <p><strong>Duração:</strong> 21 dias.</p>
+                                <p><strong>Objetivo:</strong> Fortalecer a autorregulação emocional e prevenir o agravamento de sintomas.</p>
+                                <div>
+                                    <p><strong>Recursos:</strong></p>
+                                    <ul class="list-disc list-inside ml-4">
+                                        <li>Exercícios diários de respiração e atenção plena (3-5 min).</li>
+                                        <li>Dicas práticas de organização e rotina saudável.</li>
+                                        <li>Áudios guiados de relaxamento.</li>
+                                        <li>Gamificação com pontuação por práticas realizadas.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-
-            <div id="colaborador-notificacoes" class="content-section bg-white p-6 rounded-lg shadow">
-                <h3 class="text-xl font-semibold mb-4 text-sky-700">Monitoramento e Notificações</h3>
-                <p class="mb-4 text-sm text-slate-600">Aqui você encontrará lembretes e alertas importantes para sua jornada de cuidado na plataforma.</p>
-                <div class="space-y-3">
-                    <div class="p-3 bg-sky-50 border border-sky-200 rounded-md flex items-center">
-                        <span class="text-sky-500 mr-2">🔔</span>
-                        <p class="text-sm text-slate-700">Lembrete: Seu questionário mensal está disponível para preenchimento.</p>
+                    <div class="border border-yellow-200 rounded-lg">
+                        <div class="trilha-header flex justify-between items-center p-4 bg-yellow-50 hover:bg-yellow-100" onclick="toggleTrilha('trilha2')">
+                            <h4 class="text-lg font-bold text-yellow-800">Trilha 2 – CUIDADO INTERMEDIÁRIO</h4>
+                            <span id="arrow-trilha2" class="transform transition-transform">▼</span>
+                        </div>
+                        <div id="trilha2-content" class="trilha-content">
+                            <div class="p-4 border-t border-yellow-200 text-sm text-slate-700 space-y-3">
+                                <p><strong>Indicado para:</strong> Colaboradores com relatos recorrentes de ansiedade, insônia, irritação ou baixa produtividade.</p>
+                                <p><strong>Duração:</strong> 30 dias.</p>
+                                <p><strong>Objetivo:</strong> Desenvolver percepção emocional, práticas de autoacolhimento e resgate da vitalidade mental.</p>
+                                <div>
+                                    <p><strong>Recursos:</strong></p>
+                                    <ul class="list-disc list-inside ml-4">
+                                        <li>Questionários semanais para autoavaliação emocional.</li>
+                                        <li>Práticas de escrita terapêutica e exercícios corporais leves.</li>
+                                        <li>Mini vídeos educativos sobre ansiedade e limites.</li>
+                                        <li>Diário emocional (espaço seguro para desabafos).</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="p-3 bg-yellow-50 border border-yellow-200 rounded-md flex items-center">
-                        <span class="text-yellow-500 mr-2">💡</span>
-                        <p class="text-sm text-slate-700">Novo conteúdo personalizado: "Técnicas de Mindfulness para o Dia a Dia" foi adicionado ao seu plano.</p>
-                    </div>
-                    <div class="p-3 bg-red-50 border border-red-200 rounded-md flex items-center">
-                        <span class="text-red-500 mr-2">⚠️</span>
-                        <p class="text-sm text-slate-700">Alerta (Simulado para RH, anônimo): "Detectado aumento nos indicadores de risco psicossocial no Departamento Y. Recomenda-se análise." <em>(Esta notificação seria para o RH, mostrada aqui apenas para ilustração do conceito.)</em></p>
+                    <div class="border border-red-200 rounded-lg">
+                        <div class="trilha-header flex justify-between items-center p-4 bg-red-50 hover:bg-red-100" onclick="toggleTrilha('trilha3')">
+                            <h4 class="text-lg font-bold text-red-800">Trilha 3 – CUIDADO PROFUNDO</h4>
+                            <span id="arrow-trilha3" class="transform transition-transform">▼</span>
+                        </div>
+                        <div id="trilha3-content" class="trilha-content">
+                            <div class="p-4 border-t border-red-200 text-sm text-slate-700 space-y-3">
+                                <p><strong>Indicado para:</strong> Colaboradores com risco psicossocial elevado, sinais de burnout ou episódios depressivos.</p>
+                                <p><strong>Duração:</strong> 45 dias com reavaliação contínua.</p>
+                                <p><strong>Objetivo:</strong> Apoiar a recuperação e reestruturação emocional com segurança, sigilo e eficácia.</p>
+                                <div>
+                                    <p><strong>Recursos:</strong></p>
+                                    <ul class="list-disc list-inside ml-4">
+                                        <li>Encaminhamento imediato para profissional de psicologia credenciado.</li>
+                                        <li>Sessões de escuta acolhedora via chat ou vídeo.</li>
+                                        <li>Monitoramento quinzenal por IA + gestor de saúde emocional.</li>
+                                        <li>Plano de autocuidado personalizado.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -249,84 +299,29 @@
 
         <div id="module-gestao" class="module-content hidden">
             <p class="mb-4 text-lg text-slate-700 bg-amber-50 p-4 rounded-md border border-amber-200">
-                Bem-vindo ao Módulo de Gestão (RH/CIPA)! Esta área é destinada aos gestores e membros da CIPA, fornecendo ferramentas analíticas e de configuração para gerenciar os riscos psicossociais na organização, sempre com foco na privacidade e em dados agregados.
+                Bem-vindo ao Módulo de Gestão. Esta área fornece ao RH e à CIPA uma visão analítica e anônima dos dados da plataforma, permitindo o monitoramento do clima emocional, a identificação de riscos e a geração de relatórios para compor o PGR, em total conformidade com a NR 01.
             </p>
             <div class="bg-white p-4 rounded-lg shadow mb-4">
                 <div class="flex flex-wrap border-b border-slate-200">
-                    <button onclick="showSection('gestao-dashboard', this)" class="tab-button py-2 px-3 text-sm font-medium text-slate-500 hover:text-amber-600 active">Dashboard Analítico</button>
-                    <button onclick="showSection('gestao-encaminhamentos', this)" class="tab-button py-2 px-3 text-sm font-medium text-slate-500 hover:text-amber-600">Gestão de Encaminhamentos</button>
-                    <button onclick="showSection('gestao-configuracoes', this)" class="tab-button py-2 px-3 text-sm font-medium text-slate-500 hover:text-amber-600">Configurações</button>
+                    <button onclick="showSection('gestao-dashboard', this)" class="tab-button py-2 px-3 text-sm font-medium text-slate-500 hover:text-amber-600 active">Monitoramento e Relatórios (IA)</button>
                 </div>
             </div>
-
             <div id="gestao-dashboard" class="content-section active bg-white p-6 rounded-lg shadow">
-                <h3 class="text-xl font-semibold mb-4 text-amber-700">Dashboard Analítico</h3>
-                <p class="mb-6 text-sm text-slate-600">Visualize dados agregados e anônimos sobre o bem-estar na organização, identifique tendências e gere relatórios para o PGR.</p>
+                <h3 class="text-xl font-semibold mb-4 text-amber-700">Monitoramento e Relatórios para o PGR</h3>
+                <p class="mb-6 text-sm text-slate-600">A IA cruza os dados mensais de todos os colaboradores (de forma anônima e agregada) para gerar insights sobre o clima emocional, picos de estresse, e o índice de bem-estar geral.</p>
                 <div class="grid md:grid-cols-2 gap-8">
                     <div class="chart-container">
-                        <canvas id="nivelEstresseChart"></canvas>
-                        <p class="text-center text-sm mt-2 text-slate-600">Nível de Estresse Geral na Empresa</p>
+                        <canvas id="climaEmocionalChart"></canvas>
+                        <p class="text-center text-sm mt-2 text-slate-600">Clima Emocional da Equipe (Agregado)</p>
                     </div>
                     <div class="chart-container">
-                        <canvas id="fatoresRiscoChart"></canvas>
-                        <p class="text-center text-sm mt-2 text-slate-600">Principais Fatores de Risco Identificados</p>
+                        <canvas id="riscoPsicossocialChart"></canvas>
+                        <p class="text-center text-sm mt-2 text-slate-600">Índice de Risco Psicossocial por Setor</p>
                     </div>
                 </div>
-                <div class="mt-8">
-                    <h4 class="text-lg font-medium mb-2 text-slate-600">Clima Emocional (Exemplo)</h4>
-                    <div class="p-4 border border-slate-200 rounded-md bg-slate-50">
-                        <p class="font-semibold">Sentimentos mais reportados (agregado e anônimo):</p>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                            <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-sm">Motivado</span>
-                            <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-sm">Pressionado</span>
-                            <span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-sm">Satisfeito</span>
-                            <span class="bg-red-100 text-red-700 px-2 py-1 rounded-full text-sm">Cansado</span>
-                        </div>
-                    </div>
-                    <button class="mt-4 bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-4 rounded-md shadow">Gerar Relatório para PGR</button>
-                </div>
-            </div>
-
-            <div id="gestao-encaminhamentos" class="content-section bg-white p-6 rounded-lg shadow">
-                <h3 class="text-xl font-semibold mb-4 text-amber-700">Gestão de Encaminhamentos</h3>
-                <p class="mb-4 text-sm text-slate-600">Acompanhe o fluxo de encaminhamentos para profissionais de saúde mental credenciados (dados agregados e não identificáveis).</p>
-                <div class="p-4 border border-slate-200 rounded-md bg-slate-50">
-                    <h4 class="text-lg font-medium mb-2 text-slate-600">Status dos Encaminhamentos (Agregado)</h4>
-                    <p><strong>Total de Encaminhamentos no Mês:</strong> 12</p>
-                    <p><strong>Status "Em Andamento":</strong> 5</p>
-                    <p><strong>Status "Concluído":</strong> 7</p>
-                    <p><strong>Tempo Médio de Espera para Início:</strong> 3 dias</p>
-                    <p class="text-xs text-slate-500 mt-2"><em>Nenhuma informação individual do colaborador é exibida aqui.</em></p>
-                    <button class="mt-3 bg-slate-500 hover:bg-slate-600 text-white font-semibold py-1 px-3 rounded-md text-sm">Gerenciar Rede de Profissionais</button>
-                </div>
-            </div>
-
-            <div id="gestao-configuracoes" class="content-section bg-white p-6 rounded-lg shadow">
-                <h3 class="text-xl font-semibold mb-4 text-amber-700">Configurações da Plataforma</h3>
-                <p class="mb-4 text-sm text-slate-600">Personalize questionários, trilhas de cuidado e integre com sistemas existentes.</p>
-                <div class="space-y-6">
-                    <div>
-                        <h4 class="text-lg font-medium text-slate-600">Personalização de Questionários</h4>
-                        <div class="p-3 border border-slate-200 rounded-md bg-slate-50">
-                            <label class="flex items-center">
-                                <input type="checkbox" class="h-4 w-4 border-slate-300 text-amber-600 focus:ring-amber-500 mr-2"> Adicionar perguntas específicas da empresa ao questionário inicial.
-                            </label>
-                            <p class="text-xs text-slate-500 ml-6">Requer supervisão técnica para garantir validade.</p>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-medium text-slate-600">Personalização de Trilhas do Cuidado</h4>
-                        <div class="p-3 border border-slate-200 rounded-md bg-slate-50">
-                            <button class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm py-1 px-3 rounded">Editor de Conteúdo das Trilhas</button>
-                        </div>
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-medium text-slate-600">Integrações</h4>
-                        <div class="p-3 border border-slate-200 rounded-md bg-slate-50">
-                            <p>Configurar API para SSO: <button class="text-amber-600 hover:underline text-sm">Gerenciar</button></p>
-                            <p>Importar dados de absenteísmo (SESMT/RH): <button class="text-amber-600 hover:underline text-sm">Configurar Mapeamento</button></p>
-                        </div>
-                    </div>
+                <div class="mt-8 text-center">
+                    <button class="bg-amber-600 hover:bg-amber-700 text-white font-semibold py-2 px-4 rounded-md shadow">Gerar Relatório para o PGR (NR 01)</button>
+                    <p class="text-xs text-slate-500 mt-2">Gera um documento consolidado para o Programa de Gerenciamento de Riscos.</p>
                 </div>
             </div>
         </div>
@@ -340,7 +335,7 @@
 <script>
     let currentModule = 'colaborador';
     let currentSections = {
-        colaborador: 'colaborador-auth',
+        colaborador: 'colaborador-diagnostico',
         gestao: 'gestao-dashboard'
     };
 
@@ -349,7 +344,7 @@
         document.querySelectorAll('.module-content').forEach(mc => mc.classList.add('hidden'));
         document.getElementById(`module-${moduleId}`).classList.remove('hidden');
 
-        document.querySelectorAll('nav > div > .tab-button').forEach(btn => btn.classList.remove('active', 'text-sky-600', 'border-sky-600', 'text-amber-600', 'border-amber-600'));
+        document.querySelectorAll('#nav-colaborador, #nav-gestao').forEach(btn => btn.classList.remove('active', 'text-sky-600', 'border-sky-600', 'text-amber-600', 'border-amber-600'));
         const navButton = document.getElementById(`nav-${moduleId}`);
         navButton.classList.add('active');
         if (moduleId === 'colaborador') {
@@ -358,15 +353,10 @@
             navButton.classList.add('text-amber-600', 'border-amber-600');
         }
 
-        // Activate the default or last active section for this module
-        const moduleContainer = document.getElementById(`module-${moduleId}`);
-        const firstSectionButton = moduleContainer.querySelector('.tab-button'); // First tab button in the module
-        if (firstSectionButton) {
-            showSection(currentSections[moduleId] || firstSectionButton.onclick.toString().match(/'([^']+)'/)[1], moduleContainer.querySelector(`.tab-button[onclick*="'${currentSections[moduleId] || firstSectionButton.onclick.toString().match(/'([^']+)'/)[1]}'"]`) || firstSectionButton);
-        }
-
-        if (moduleId === 'gestao' && currentSections.gestao === 'gestao-dashboard') {
-            renderCharts();
+        const defaultSectionId = currentSections[moduleId];
+        const sectionButton = document.querySelector(`#module-${moduleId} .tab-button[onclick*="'${defaultSectionId}'"]`);
+        if (sectionButton) {
+            showSection(defaultSectionId, sectionButton);
         }
     }
 
@@ -375,128 +365,98 @@
         const moduleContainer = document.getElementById(`module-${currentModule}`);
 
         moduleContainer.querySelectorAll('.content-section').forEach(cs => cs.classList.remove('active'));
-        moduleContainer.querySelector(`#${sectionId}`).classList.add('active');
-
-        moduleContainer.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        if (buttonElement) {
-            buttonElement.classList.add('active');
-        } else {
-            // Fallback if buttonElement is not passed (e.g. on initial module load)
-            const fallbackButton = moduleContainer.querySelector(`.tab-button[onclick*="'${sectionId}'"]`);
-            if (fallbackButton) fallbackButton.classList.add('active');
+        const sectionToShow = moduleContainer.querySelector(`#${sectionId}`);
+        if(sectionToShow) {
+            sectionToShow.classList.add('active');
         }
 
+        moduleContainer.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        if(buttonElement) {
+            buttonElement.classList.add('active');
+        }
+
+        if (sectionId === 'colaborador-diagnostico') {
+            const defaultQuestionnaireButton = document.querySelector('#colaborador-diagnostico .sub-tab-button');
+            showQuestionnaireTab('inicial', defaultQuestionnaireButton);
+        }
 
         if (currentModule === 'gestao' && sectionId === 'gestao-dashboard') {
-            renderCharts();
+            renderGestaoCharts();
         }
     }
 
-    let nivelEstresseChartInstance = null;
-    let fatoresRiscoChartInstance = null;
+    function toggleTrilha(trilhaId) {
+        const content = document.getElementById(`${trilhaId}-content`);
+        const arrow = document.getElementById(`arrow-${trilhaId}`);
+        if (content.style.maxHeight) {
+            content.style.maxHeight = null;
+            arrow.style.transform = 'rotate(0deg)';
+        } else {
+            content.style.maxHeight = content.scrollHeight + "px";
+            arrow.style.transform = 'rotate(180deg)';
+        }
+    }
 
-    function renderCharts() {
-        const nivelEstresseCtx = document.getElementById('nivelEstresseChart')?.getContext('2d');
-        if (nivelEstresseCtx) {
-            if (nivelEstresseChartInstance) {
-                nivelEstresseChartInstance.destroy();
-            }
-            nivelEstresseChartInstance = new Chart(nivelEstresseCtx, {
-                type: 'pie',
+    function showQuestionnaireTab(tabName, buttonElement) {
+        const questionnaireContainer = document.getElementById('colaborador-diagnostico');
+        questionnaireContainer.querySelectorAll('.questionnaire-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        questionnaireContainer.querySelectorAll('.sub-tab-button').forEach(button => {
+            button.classList.remove('active');
+        });
+
+        const contentToShow = document.getElementById(`questionario-${tabName}-content`);
+        if (contentToShow) {
+            contentToShow.classList.add('active');
+        }
+        if (buttonElement) {
+            buttonElement.classList.add('active');
+        }
+    }
+
+    let climaChartInstance = null;
+    let riscoChartInstance = null;
+
+    function renderGestaoCharts() {
+        const climaCtx = document.getElementById('climaEmocionalChart')?.getContext('2d');
+        if (climaCtx) {
+            if (climaChartInstance) climaChartInstance.destroy();
+            climaChartInstance = new Chart(climaCtx, {
+                type: 'doughnut',
                 data: {
-                    labels: ['Baixo', 'Moderado', 'Alto'],
+                    labels: ['Positivo', 'Neutro', 'Negativo'],
                     datasets: [{
-                        label: 'Nível de Estresse',
-                        data: [45, 35, 20],
-                        backgroundColor: ['#60a5fa', '#fbbf24', '#f87171'],
+                        data: [55, 30, 15],
+                        backgroundColor: ['#22c55e', '#64748b', '#ef4444'],
                         hoverOffset: 4
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top' },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed !== null) {
-                                        label += context.parsed + '%';
-                                    }
-                                    return label;
-                                }
-                            }
-                        }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
-        const fatoresRiscoCtx = document.getElementById('fatoresRiscoChart')?.getContext('2d');
-        if (fatoresRiscoCtx) {
-            if (fatoresRiscoChartInstance) {
-                fatoresRiscoChartInstance.destroy();
-            }
-            fatoresRiscoChartInstance = new Chart(fatoresRiscoCtx, {
+        const riscoCtx = document.getElementById('riscoPsicossocialChart')?.getContext('2d');
+        if (riscoCtx) {
+            if (riscoChartInstance) riscoChartInstance.destroy();
+            riscoChartInstance = new Chart(riscoCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Sobrecarga', 'Falta de Autonomia', 'Conflitos', 'Insegurança', 'Pouco Suporte'],
+                    labels: ['Vendas', 'TI', 'RH', 'Operações'],
                     datasets: [{
-                        label: 'Frequência (%)',
-                        data: [60, 45, 30, 25, 20],
-                        backgroundColor: ['#38bdf8', '#818cf8', '#a78bfa', '#f472b6', '#fb7185'],
-                        borderColor: ['#0ea5e9', '#6366f1', '#8b5cf6', '#db2777', '#e11d48'],
-                        borderWidth: 1
+                        label: 'Índice de Risco',
+                        data: [65, 40, 25, 55],
+                        backgroundColor: ['#3b82f6', '#8b5cf6', '#10b981', '#f97316'],
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, max: 100 }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += context.parsed.y + '%';
-                                    }
-                                    // Wrap label text
-                                    const maxLabelLength = 16;
-                                    const words = context.label.split(' ');
-                                    let currentLine = '';
-                                    const lines = [];
-                                    words.forEach(word => {
-                                        if ((currentLine + word).length > maxLabelLength) {
-                                            lines.push(currentLine.trim());
-                                            currentLine = '';
-                                        }
-                                        currentLine += word + ' ';
-                                    });
-                                    lines.push(currentLine.trim());
-                                    return lines.length > 1 ? lines : label;
-                                }
-                            }
-                        }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y' }
             });
         }
     }
 
-    // Initialize the default module and section
     document.addEventListener('DOMContentLoaded', () => {
-        showModule('colaborador'); // Start with Módulo do Colaborador
+        showModule('colaborador');
     });
 </script>
 </body>
